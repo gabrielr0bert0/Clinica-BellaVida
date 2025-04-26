@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitoramento - BellaVida</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Área de Monitoramento - BellaVida</h1>
+    <nav>
+      <a href="painel.html">Voltar ao Painel</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <div id="adminLoginForm">
+      <h2>Login de Acesso Restrito</h2>
+      <form id="formAdminLogin">
+        <input type="text" id="adminUser" placeholder="Usuário Admin" required>
+        <input type="password" id="adminPass" placeholder="Senha Admin" required>
+        <button type="submit">Entrar</button>
+      </form>
+      <p id="adminLoginMessage" style="color:red;"></p>
+    </div>
+
+    <div id="loginsData" style="display: none;">
+      <h2>Logins Recentes</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr style="background: #3498db; color: white;">
+            <th style="padding: 10px; border: 1px solid #ccc;">Usuário</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Senha</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Localização</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Data e Hora</th>
+          </tr>
+        </thead>
+        <tbody id="loginTable">
+          <!-- Dados aparecem aqui -->
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <footer>
+    © 2025 Clínica BellaVida | Todos os direitos reservados.
+  </footer>
+
+  <script>
+    document.getElementById('formAdminLogin').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const user = document.getElementById('adminUser').value;
+      const pass = document.getElementById('adminPass').value;
+
+      const correctUser = 'RCS1415&';
+      const correctPass = 'RCS.R3d3.Cib3rs3gur4nç4.Sit3s';
+
+      if (user === correctUser && pass === correctPass) {
+        document.getElementById('adminLoginForm').style.display = 'none';
+        document.getElementById('loginsData').style.display = 'block';
+
+        const logins = JSON.parse(localStorage.getItem('logins')) || [];
+        const table = document.getElementById('loginTable');
+        table.innerHTML = "";
+
+        if (logins.length === 0) {
+          table.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:10px;'>Nenhum login registrado.</td></tr>";
+        } else {
+          logins.forEach(login => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td style="padding: 10px; border: 1px solid #ccc;">${login.usuario}</td>
+              <td style="padding: 10px; border: 1px solid #ccc;">${login.senha}</td>
+              <td style="padding: 10px; border: 1px solid #ccc;">${login.localizacao}</td>
+              <td style="padding: 10px; border: 1px solid #ccc;">${login.dataHora}</td>
+            `;
+            table.appendChild(row);
+          });
+        }
+
+      } else {
+        document.getElementById('adminLoginMessage').textContent = "Usuário ou senha incorretos.";
+      }
+    });
+  </script>
+
+</body>
+</html>

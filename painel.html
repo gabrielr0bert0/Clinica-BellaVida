@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel - BellaVida</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Painel da Clínica BellaVida</h1>
+    <div style="position: absolute; top: 20px; right: 20px;">
+      <img src="icone-admin.png" alt="Admin Monitoramento" style="width: 40px; cursor: pointer;" onclick="window.location.href='monitoramento.html'">
+    </div>
+    <button onclick="logout()">Sair</button>
+  </header>
+
+  <main>
+    <h2>Agendar Consulta</h2>
+    <form id="formConsulta">
+      <input type="text" id="nomePaciente" placeholder="Nome do Paciente" required>
+      <input type="datetime-local" id="dataHoraConsulta" required>
+      <button type="submit">Agendar</button>
+    </form>
+
+    <h3>Consultas Agendadas</h3>
+    <ul id="listaConsultas"></ul>
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - BellaVida</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Login - Clínica BellaVida</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="register.html">Registrar</a>
+    </nav>
+  </header>
+
+  <main>
+    <form id="loginForm">
+      <input type="text" id="loginUser" placeholder="Usuário" required>
+      <input type="password" id="loginPass" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="loginMessage"></p>
+  </main>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+
+      const usuario = document.getElementById('loginUser').value;
+      const senha = document.getElementById('loginPass').value;
+
+      // Localização simulada
+      let localizacao = "Brasil - São Paulo";
+
+      if (usuario.toLowerCase() === "hacker") {
+        localizacao = "Estados Unidos - New York";
+      }
+
+      if (localizacao.includes("Brasil")) {
+        // Agora verifica se o usuário e senha estão corretos no localStorage
+        const senhaSalva = localStorage.getItem(usuario);
+
+        if (senhaSalva && senhaSalva === senha) {
+          const loginInfo = {
+            usuario,
+            senha,
+            localizacao,
+            dataHora: new Date().toLocaleString()
+          };
+
+          let logins = JSON.parse(localStorage.getItem('logins')) || [];
+          logins.push(loginInfo);
+          localStorage.setItem('logins', JSON.stringify(logins));
+
+          // Marca que está logado
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('currentUser', usuario);
+
+          // Redireciona para o painel
+          window.location.href = "painel.html";
+
+        } else {
+          document.getElementById('loginMessage').style.color = "red";
+          document.getElementById('loginMessage').innerText = "Usuário ou senha incorretos!";
+        }
+
+      } else {
+        // Acesso bloqueado por localização
+        document.getElementById('loginMessage').style.color = "red";
+        document.getElementById('loginMessage').innerText = "Acesso bloqueado: localização não autorizada.";
+      }
+    });
+  </script>
+
+</body>
+</html>
