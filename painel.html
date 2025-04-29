@@ -4,30 +4,362 @@
   <meta charset="UTF-8">
   <title>Painel - BellaVida</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar {
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #3498db;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 15px 0;
+      font-size: 18px;
+    }
+
+    .sidebar nav a:hover {
+      background-color: #2980b9;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    body {
+      margin-left: 220px;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .agendamento-section {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .consultas-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .user-info {
+      background-color: #e8f4fc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
 
+  <div class="sidebar">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registrar</a>
+      <a href="painel.html" style="display:none;">Painel</a>
+      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
+      <a href="#" onclick="logout()" style="display:none;">Sair</a>
+    </nav>
+  </div>
+
+  <script>
+    // Verificação de login ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verifica se o usuário está logado
+      if (localStorage.getItem('isLoggedIn') !== 'true') {
+        alert('Acesso negado! Faça login como funcionário.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Atualiza a sidebar
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
+      document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+      
+      if (isAdmin) {
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+      }
+    });
+  </script>
+
   <header>
-    <h1>Painel da Clínica BellaVida</h1>
-    <div style="position: absolute; top: 20px; right: 20px;">
-      <img src="icone-admin.png" alt="Admin Monitoramento" style="width: 40px; cursor: pointer;" onclick="window.location.href='monitoramento.html'">
-    </div>
-    <button onclick="logout()">Sair</button>
+    <h1>Painel de Agendamentos - BellaVida</h1>
+    <nav>
+      <a href="monitoramento.html" id="adminLink" style="display:none;">Área Administrativa</a>
+    </nav>
   </header>
 
-  <main>
-    <h2>Agendar Consulta</h2>
-    <form id="formConsulta">
-      <input type="text" id="nomePaciente" placeholder="Nome do Paciente" required>
-      <input type="datetime-local" id="dataHoraConsulta" required>
-      <button type="submit">Agendar</button>
-    </form>
+  <main class="container">
+    <div class="user-info">
+      <h2>Bem-vindo, <span id="currentUser"></span>!</h2>
+      <p>Aqui você pode gerenciar os agendamentos de consultas dos pacientes.</p>
+    </div>
 
-    <h3>Consultas Agendadas</h3>
-    <ul id="listaConsultas"></ul>
+    <section class="agendamento-section">
+      <h2>Agendar Nova Consulta</h2>
+      <form id="formAgendamento">
+        <div>
+          <label for="nomePaciente">Nome do Paciente:</label>
+          <input type="text" id="nomePaciente" required>
+        </div>
+        
+        <div>
+          <label for="cpfPaciente">CPF:</label>
+          <input type="text" id="cpfPaciente" placeholder="000.000.000-00" required>
+        </div>
+        
+        <div>
+          <label for="dataConsulta">Data:</label>
+          <input type="date" id="dataConsulta" required>
+        </div>
+        
+        <div>
+          <label for="horaConsulta">Hora:</label>
+          <input type="time" id="horaConsulta" required>
+        </div>
+        
+        <div>
+          <label for="especialidade">Especialidade:</label>
+          <select id="especialidade" required>
+            <option value="">Selecione...</option>
+            <option value="clinica_geral">Clínica Geral</option>
+            <option value="pediatria">Pediatria</option>
+            <option value="ginecologia">Ginecologia</option>
+            <option value="psicologia">Psicologia</option>
+            <option value="nutricao">Nutrição</option>
+            <option value="neurologia">Neurologia</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="medicoResponsavel">Médico Responsável:</label>
+          <input type="text" id="medicoResponsavel" required>
+        </div>
+        
+        <div>
+          <label for="observacoes">Observações:</label>
+          <textarea id="observacoes" rows="3"></textarea>
+        </div>
+        
+        <button type="submit">Agendar Consulta</button>
+      </form>
+    </section>
+
+    <section class="consultas-section">
+      <h2>Consultas Agendadas</h2>
+      <div id="listaConsultas">
+        <table>
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>CPF</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Especialidade</th>
+              <th>Médico</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaConsultas">
+            <!-- Consultas serão adicionadas aqui dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
-  <script src="script.js"></script>
+  <footer>
+    © 2025 Clínica BellaVida | Todos os direitos reservados.
+  </footer>
 
+  <script>
+    // Exibe o usuário logado
+    document.getElementById('currentUser').textContent = localStorage.getItem('currentUser') || 'Funcionário';
+    
+    // Mostra link administrativo se for admin
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+      document.getElementById('adminLink').style.display = 'block';
+    }
+
+    // Carrega as consultas ao abrir a página
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarConsultas();
+    });
+
+    // Formulário de agendamento
+    document.getElementById('formAgendamento').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const consulta = {
+        paciente: document.getElementById('nomePaciente').value,
+        cpf: document.getElementById('cpfPaciente').value,
+        data: document.getElementById('dataConsulta').value,
+        hora: document.getElementById('horaConsulta').value,
+        especialidade: document.getElementById('especialidade').value,
+        medico: document.getElementById('medicoResponsavel').value,
+        observacoes: document.getElementById('observacoes').value,
+        agendadoPor: localStorage.getItem('currentUser') || 'Sistema',
+        dataAgendamento: new Date().toLocaleString()
+      };
+      
+      // Salva no localStorage
+      let consultas = JSON.parse(localStorage.getItem('consultas')) || [];
+      consultas.push(consulta);
+      localStorage.setItem('consultas', JSON.stringify(consultas));
+      
+      // Recarrega a lista
+      carregarConsultas();
+      
+      // Limpa o formulário
+      this.reset();
+      
+      alert('Consulta agendada com sucesso!');
+    });
+
+    // Função para carregar as consultas
+    function carregarConsultas() {
+      const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
+      const tabela = document.getElementById('tabelaConsultas');
+      tabela.innerHTML = '';
+      
+      if (consultas.length === 0) {
+        tabela.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma consulta agendada</td></tr>';
+        return;
+      }
+      
+      consultas.forEach((consulta, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${consulta.paciente}</td>
+          <td>${consulta.cpf}</td>
+          <td>${new Date(consulta.data).toLocaleDateString('pt-BR')}</td>
+          <td>${consulta.hora}</td>
+          <td>${formatEspecialidade(consulta.especialidade)}</td>
+          <td>${consulta.medico}</td>
+          <td>
+            <button onclick="editarConsulta(${index})">Editar</button>
+            <button onclick="cancelarConsulta(${index})" style="background-color: #e74c3c;">Cancelar</button>
+          </td>
+        `;
+        tabela.appendChild(row);
+      });
+    }
+    
+    // Formata a especialidade para exibição
+    function formatEspecialidade(especialidade) {
+      const formatos = {
+        'clinica_geral': 'Clínica Geral',
+        'pediatria': 'Pediatria',
+        'ginecologia': 'Ginecologia',
+        'psicologia': 'Psicologia',
+        'nutricao': 'Nutrição',
+        'neurologia': 'Neurologia'
+      };
+      return formatos[especialidade] || especialidade;
+    }
+    
+    // Função para editar consulta
+    function editarConsulta(index) {
+      const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
+      const consulta = consultas[index];
+      
+      // Preenche o formulário com os dados da consulta
+      document.getElementById('nomePaciente').value = consulta.paciente;
+      document.getElementById('cpfPaciente').value = consulta.cpf;
+      document.getElementById('dataConsulta').value = consulta.data;
+      document.getElementById('horaConsulta').value = consulta.hora;
+      document.getElementById('especialidade').value = consulta.especialidade;
+      document.getElementById('medicoResponsavel').value = consulta.medico;
+      document.getElementById('observacoes').value = consulta.observacoes || '';
+      
+      // Remove a consulta antiga
+      consultas.splice(index, 1);
+      localStorage.setItem('consultas', JSON.stringify(consultas));
+      
+      // Atualiza a lista
+      carregarConsultas();
+      
+      // Rolagem para o formulário
+      document.getElementById('formAgendamento').scrollIntoView();
+    }
+    
+    // Função para cancelar consulta
+    function cancelarConsulta(index) {
+      if (confirm('Tem certeza que deseja cancelar esta consulta?')) {
+        const consultas = JSON.parse(localStorage.getItem('consultas')) || [];
+        consultas.splice(index, 1);
+        localStorage.setItem('consultas', JSON.stringify(consultas));
+        carregarConsultas();
+        alert('Consulta cancelada com sucesso!');
+      }
+    }
+    
+    // Função de logout
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    }
+  </script>
 </body>
 </html>

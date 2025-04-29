@@ -2,10 +2,106 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Registrar - VitaSecure</title>
+  <title>Registrar - BellaVida</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar {
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #1a374d;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 15px 0;
+      font-size: 18px;
+    }
+
+    .sidebar nav a:hover {
+      background-color: #2980b9;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    body {
+      margin-left: 220px;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #1a374d;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+
+  <div class="sidebar">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registrar</a>
+      <a href="painel.html" style="display:none;">Painel</a>
+      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
+      <a href="#" onclick="logout()" style="display:none;">Sair</a>
+    </nav>
+  </div>
+
+  <script>
+    // Atualiza a sidebar ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      
+      if (isLoggedIn || isAdmin) {
+        document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+        
+        if (isAdmin) {
+          document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+        }
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    }
+  </script>
+
   <header>
     <h1>Registrar Novo Usuário</h1>
     <nav>
@@ -23,6 +119,23 @@
     <p id="registerMessage"></p>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('registerUser').value;
+      const pass = document.getElementById('registerPass').value;
+      
+      if (user && pass) {
+        localStorage.setItem(user, pass);
+        document.getElementById('registerMessage').innerText = 'Usuário registrado com sucesso!';
+        document.getElementById('registerMessage').style.color = 'green';
+        this.reset();
+      } else {
+        document.getElementById('registerMessage').innerText = 'Preencha todos os campos!';
+        document.getElementById('registerMessage').style.color = 'red';
+      }
+    });
+  </script>
+
 </body>
 </html>

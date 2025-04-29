@@ -4,26 +4,103 @@
   <meta charset="UTF-8">
   <title>Clínica BellaVida</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar {
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #1a374d;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 15px 0;
+      font-size: 18px;
+    }
+
+    .sidebar nav a:hover {
+      background-color: #2980b9;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    body {
+      margin-left: 220px;
+      font-family: Arial, sans-serif;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1a374d, #2980b9);
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .info {
+      background: white;
+      padding: 30px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
 
-  <header>
-    <h1>Clínica BellaVida</h1>
+  <div class="sidebar">
     <nav>
+      <a href="index.html">Home</a>
       <a href="login.html">Login</a>
       <a href="register.html">Registrar</a>
+      <!-- Removido o link para painel.html -->
+      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
+      <a href="#" onclick="logout()" style="display:none;">Sair</a>
     </nav>
-  </header>
+  </div>
 
+  <script>
+    // Atualiza a sidebar ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      
+      // Mostra apenas Monitoramento e Sair para administradores
+      if (isAdmin) {
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <!-- Todo o restante do conteúdo permanece igual -->
   <section class="hero">
     <div class="container">
-      <h2>Bem-vindo à BellaVida</h2>
+      <h2>Bem-vindo à Clínica BellaVida</h2>
       <p>Cuidar de você é o nosso propósito. Segurança, acolhimento e qualidade de vida!</p>
     </div>
   </section>
 
   <main class="container">
-
     <section class="info">
       <h2>Quem Somos</h2>
       <p>Fundada por Isabella Carvalho, formada na Faculdade de Medicina USP (Universidade de São Paulo) e com doutorado em neurologia, a Clínica BellaVida é referência em cuidados médicos e bem-estar. Nossa missão é proporcionar saúde com segurança, carinho e excelência em atendimento. Agende já a sua consulta!</p>
@@ -63,9 +140,9 @@
     <section class="info">
       <h2>O Que Dizem Nossos Pacientes</h2>
       <ul>
-        <li>“Excelente atendimento! Me senti acolhida desde o primeiro momento.” - Ana Albini.</li>
-        <li>“A telemedicina facilitou muito a minha vida. Atendimento rápido e eficiente.” - Bruno S.</li>
-        <li>“Profissionais muito qualificados, ambiente acolhedor!” - Carolina M.</li>
+        <li>"Excelente atendimento! Me senti acolhida desde o primeiro momento." - Ana Albini.</li>
+        <li>"A telemedicina facilitou muito a minha vida. Atendimento rápido e eficiente." - Bruno S.</li>
+        <li>"Profissionais muito qualificados, ambiente acolhedor!" - Carolina M.</li>
       </ul>
     </section>
 
@@ -75,7 +152,6 @@
       <p>Telefone: (11) 98765-4321</p>
       <p>Endereço: Rua da Saúde, 123 - São Paulo/SP</p>
     </section>
-
   </main>
 
   <footer>

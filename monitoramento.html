@@ -4,18 +4,152 @@
   <meta charset="UTF-8">
   <title>Monitoramento - BellaVida</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .sidebar {
+      width: 220px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: #3498db;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 15px 0;
+      font-size: 18px;
+    }
+
+    .sidebar nav a:hover {
+      background-color: #2980b9;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    body {
+      margin-left: 220px;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    #adminLoginForm {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+
+    #adminLoginForm input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+
+  <div class="sidebar">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registrar</a>
+      <a href="painel.html" style="display:none;">Painel</a>
+      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
+      <a href="#" onclick="logout()" style="display:none;">Sair</a>
+    </nav>
+  </div>
+
+  <script>
+    // Verificação de acesso administrativo
+    document.addEventListener('DOMContentLoaded', function() {
+      const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      
+      if (!isAdmin) {
+        // Se não for admin, mostra apenas o formulário de login
+        document.getElementById('adminLoginForm').style.display = 'block';
+        document.getElementById('loginsData').style.display = 'none';
+        
+        // Atualiza sidebar
+        document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'none';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'none';
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'none';
+      } else {
+        // Se for admin, mostra os dados diretamente
+        document.getElementById('adminLoginForm').style.display = 'none';
+        document.getElementById('loginsData').style.display = 'block';
+        carregarLogins();
+        
+        // Atualiza sidebar
+        document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('adminLoggedIn');
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    }
+
+    function carregarLogins() {
+      const logins = JSON.parse(localStorage.getItem('logins')) || [];
+      const table = document.getElementById('loginTable');
+      table.innerHTML = "";
+
+      if (logins.length === 0) {
+        table.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Nenhum login registrado</td></tr>";
+      } else {
+        logins.forEach(login => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${login.usuario || 'N/A'}</td>
+            <td>${login.senha || 'N/A'}</td>
+            <td>${login.localizacao || 'N/A'}</td>
+            <td>${login.dataHora || 'N/A'}</td>
+          `;
+          table.appendChild(row);
+        });
+      }
+    }
+  </script>
 
   <header>
     <h1>Área de Monitoramento - BellaVida</h1>
     <nav>
-      <a href="painel.html">Voltar ao Painel</a>
+      <a href="painel.html" id="voltarPainel" style="display:none;">Voltar ao Painel</a>
     </nav>
   </header>
 
   <main class="container">
-
     <div id="adminLoginForm">
       <h2>Login de Acesso Restrito</h2>
       <form id="formAdminLogin">
@@ -28,13 +162,13 @@
 
     <div id="loginsData" style="display: none;">
       <h2>Logins Recentes</h2>
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <table>
         <thead>
-          <tr style="background: #3498db; color: white;">
-            <th style="padding: 10px; border: 1px solid #ccc;">Usuário</th>
-            <th style="padding: 10px; border: 1px solid #ccc;">Senha</th>
-            <th style="padding: 10px; border: 1px solid #ccc;">Localização</th>
-            <th style="padding: 10px; border: 1px solid #ccc;">Data e Hora</th>
+          <tr>
+            <th>Usuário</th>
+            <th>Senha</th>
+            <th>Localização</th>
+            <th>Data e Hora</th>
           </tr>
         </thead>
         <tbody id="loginTable">
@@ -42,7 +176,6 @@
         </tbody>
       </table>
     </div>
-
   </main>
 
   <footer>
@@ -56,37 +189,21 @@
       const user = document.getElementById('adminUser').value;
       const pass = document.getElementById('adminPass').value;
 
-      const correctUser = 'RCS1415&';
-      const correctPass = 'RCS.R3d3.Cib3rs3gur4nç4.Sit3s';
-
-      if (user === correctUser && pass === correctPass) {
+      if (user === 'RCS1415&' && pass === 'RCS.R3d3.Cib3rs3gur4nç4.Sit3s') {
+        localStorage.setItem('adminLoggedIn', 'true');
         document.getElementById('adminLoginForm').style.display = 'none';
         document.getElementById('loginsData').style.display = 'block';
-
-        const logins = JSON.parse(localStorage.getItem('logins')) || [];
-        const table = document.getElementById('loginTable');
-        table.innerHTML = "";
-
-        if (logins.length === 0) {
-          table.innerHTML = "<tr><td colspan='4' style='text-align:center; padding:10px;'>Nenhum login registrado.</td></tr>";
-        } else {
-          logins.forEach(login => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td style="padding: 10px; border: 1px solid #ccc;">${login.usuario}</td>
-              <td style="padding: 10px; border: 1px solid #ccc;">${login.senha}</td>
-              <td style="padding: 10px; border: 1px solid #ccc;">${login.localizacao}</td>
-              <td style="padding: 10px; border: 1px solid #ccc;">${login.dataHora}</td>
-            `;
-            table.appendChild(row);
-          });
-        }
-
+        document.getElementById('voltarPainel').style.display = 'block';
+        carregarLogins();
+        
+        // Atualiza sidebar
+        document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
       } else {
-        document.getElementById('adminLoginMessage').textContent = "Usuário ou senha incorretos.";
+        document.getElementById('adminLoginMessage').textContent = "Credenciais inválidas!";
       }
     });
   </script>
-
 </body>
 </html>
