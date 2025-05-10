@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <meta charset="UTF-8">
   <title>Registrar - BellaVida</title>
   <link rel="stylesheet" href="style.css">
@@ -12,7 +13,7 @@
       left: 0;
       height: 100%;
       background-color: #1a374d;
-      padding: 20px;
+      padding: 30px;
       box-sizing: border-box;
     }
 
@@ -68,29 +69,31 @@
 <body>
 
   <div class="sidebar">
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-      <a href="register.html">Registrar</a>
-      <a href="painel.html" style="display:none;">Painel</a>
-      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
-      <a href="#" onclick="logout()" style="display:none;">Sair</a>
-    </nav>
-  </div>
+  <nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="register.html"><i class="fas fa-user-plus"></i> Registrar</a>
+    <a href="painel.html" style="display:none;"><i class="fas fa-th-large"></i> Painel</a>
+    <a href="monitoramento.html" style="display:none;"><i class="fas fa-tachometer-alt"></i> Monitoramento</a>
+    <a href="#" onclick="logout()" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+  </nav>
+</div>
+
 
   <script>
-    // Atualiza a sidebar ao carregar a página
+    // Sidebar básica - sem verificação de login
     document.addEventListener('DOMContentLoaded', function() {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       
-      if (isLoggedIn || isAdmin) {
+      if (isAdmin) {
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+      }
+      
+      if (isLoggedIn) {
         document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
         document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
-        
-        if (isAdmin) {
-          document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
-        }
       }
     });
 
@@ -104,10 +107,6 @@
 
   <header>
     <h1>Registrar Novo Usuário</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-    </nav>
   </header>
 
   <main>

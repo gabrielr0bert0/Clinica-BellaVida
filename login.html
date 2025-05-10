@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <meta charset="UTF-8">
   <title>Login - BellaVida</title>
   <link rel="stylesheet" href="style.css">
@@ -12,7 +13,7 @@
       left: 0;
       height: 100%;
       background-color: #1a374d;
-      padding: 20px;
+      padding: 30px;
       box-sizing: border-box;
     }
 
@@ -74,29 +75,30 @@
 <body>
 
   <div class="sidebar">
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-      <a href="register.html">Registrar</a>
-      <a href="painel.html" style="display:none;">Painel</a>
-      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
-      <a href="#" onclick="logout()" style="display:none;">Sair</a>
-    </nav>
-  </div>
+  <nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="register.html"><i class="fas fa-user-plus"></i> Registrar</a>
+    <a href="painel.html" style="display:none;"><i class="fas fa-th-large"></i> Painel</a>
+    <a href="monitoramento.html" style="display:none;"><i class="fas fa-tachometer-alt"></i> Monitoramento</a>
+    <a href="#" onclick="logout()" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+  </nav>
+</div>
 
   <script>
-    // Atualiza a sidebar ao carregar a página
+    // Sidebar básica - sem verificação de login
     document.addEventListener('DOMContentLoaded', function() {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
       
-      if (isLoggedIn || isAdmin) {
+      if (isAdmin) {
+        document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
+        document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
+      }
+      
+      if (isLoggedIn) {
         document.querySelector('.sidebar nav a[href="painel.html"]').style.display = 'block';
         document.querySelector('.sidebar nav a[onclick="logout()"]').style.display = 'block';
-        
-        if (isAdmin) {
-          document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
-        }
       }
     });
 
@@ -110,10 +112,6 @@
 
   <header>
     <h1>Login - Clínica BellaVida</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="register.html">Registrar</a>
-    </nav>
   </header>
 
   <main>
@@ -140,39 +138,28 @@
         return;
       }
 
-      // Localização simulada
-      let localizacao = "Brasil - São Paulo";
-      if (usuario.toLowerCase() === "hacker") {
-        localizacao = "Estados Unidos - New York";
-      }
+      // Verificação para usuário normal
+      const senhaSalva = localStorage.getItem(usuario);
 
-      if (localizacao.includes("Brasil")) {
-        const senhaSalva = localStorage.getItem(usuario);
+      if (senhaSalva && senhaSalva === senha) {
+        const loginInfo = {
+          usuario,
+          senha,
+          localizacao: "Brasil - São Paulo",
+          dataHora: new Date().toLocaleString()
+        };
 
-        if (senhaSalva && senhaSalva === senha) {
-          const loginInfo = {
-            usuario,
-            senha,
-            localizacao,
-            dataHora: new Date().toLocaleString()
-          };
+        let logins = JSON.parse(localStorage.getItem('logins')) || [];
+        logins.push(loginInfo);
+        localStorage.setItem('logins', JSON.stringify(logins));
 
-          let logins = JSON.parse(localStorage.getItem('logins')) || [];
-          logins.push(loginInfo);
-          localStorage.setItem('logins', JSON.stringify(logins));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', usuario);
 
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('currentUser', usuario);
-
-          window.location.href = "painel.html";
-
-        } else {
-          document.getElementById('loginMessage').style.color = "red";
-          document.getElementById('loginMessage').innerText = "Usuário ou senha incorretos!";
-        }
+        window.location.href = "painel.html";
       } else {
         document.getElementById('loginMessage').style.color = "red";
-        document.getElementById('loginMessage').innerText = "Acesso bloqueado: localização não autorizada.";
+        document.getElementById('loginMessage').innerText = "Usuário ou senha incorretos!";
       }
     });
   </script>

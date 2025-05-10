@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <title>Painel - BellaVida</title>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -11,8 +12,8 @@
       top: 0;
       left: 0;
       height: 100%;
-      background-color: #3498db;
-      padding: 20px;
+      background-color: #1a374d;
+      padding: 30px;
       box-sizing: border-box;
     }
 
@@ -105,20 +106,40 @@
       border-radius: 8px;
       margin-bottom: 20px;
     }
+
+    /* Novo estilo para o ícone de engrenagem */
+    .admin-gear {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.3s;
+    }
+
+    .admin-gear:hover {
+      transform: rotate(90deg);
+    }
   </style>
 </head>
 <body>
 
   <div class="sidebar">
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-      <a href="register.html">Registrar</a>
-      <a href="painel.html" style="display:none;">Painel</a>
-      <a href="monitoramento.html" style="display:none;">Monitoramento</a>
-      <a href="#" onclick="logout()" style="display:none;">Sair</a>
-    </nav>
-  </div>
+  <nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="register.html"><i class="fas fa-user-plus"></i> Registrar</a>
+    <a href="painel.html" style="display:none;"><i class="fas fa-th-large"></i> Painel</a>
+    <a href="monitoramento.html" style="display:none;"><i class="fas fa-tachometer-alt"></i> Monitoramento</a>
+    <a href="#" onclick="logout()" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+  </nav>
+</div>
+
+
+  <!-- Ícone de engrenagem para admin -->
+  <img src="gear-icon.png" alt="Configurações" class="admin-gear" onclick="redirectToMonitoramentoLogin()">
 
   <script>
     // Verificação de login ao carregar a página
@@ -139,6 +160,13 @@
         document.querySelector('.sidebar nav a[href="monitoramento.html"]').style.display = 'block';
       }
     });
+
+    // Função para redirecionar para o login do monitoramento
+    function redirectToMonitoramentoLogin() {
+      // Limpa o status de admin antes de redirecionar
+      localStorage.removeItem('adminLoggedIn');
+      window.location.href = 'monitoramento.html';
+    }
   </script>
 
   <header>
@@ -154,6 +182,7 @@
       <p>Aqui você pode gerenciar os agendamentos de consultas dos pacientes.</p>
     </div>
 
+    <!-- Restante do conteúdo do painel permanece igual -->
     <section class="agendamento-section">
       <h2>Agendar Nova Consulta</h2>
       <form id="formAgendamento">
@@ -192,7 +221,14 @@
         
         <div>
           <label for="medicoResponsavel">Médico Responsável:</label>
-          <input type="text" id="medicoResponsavel" required>
+          <select id="medicoResponsavel" required>
+            <option value="">Selecione...</option>
+            <option value="clinica_geral">Dra. Isabella Carvalho</option>
+            <option value="pediatria">Dr. José Karlos</option>
+            <option value="ginecologia">Dra. Gina Reuben</option>
+            <option value="psicologia">Dra. Carla Fontineli</option>
+            <option value="nutricao">Dr. Yuri Nelson</option>
+          </select>
         </div>
         
         <div>
